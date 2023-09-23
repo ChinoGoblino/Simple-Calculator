@@ -1,49 +1,85 @@
+// Global declaration of common variables
 let equation = [];
 let length = 0;
 let display = "";
+let error = false;
 
 function character(value) {
-    display = "";
-    // returns local storage if Ans
-    if (value == 'Ans') {
-      previous = localStorage.getItem("prev")
-      equation[length] = previous;
+  // Sound effect when pressed
+  let sound = new Audio('Assets/ClickSFX.wav');
+  sound.play();  
+  // If less than character limit start displaying equation and appending to equation.
+  if (document.getElementById("array").innerHTML.length + (value.toString()).length <= 17) {
+      display = "";
+      // returns local storage if Ans
+      if (value == 'Ans') {
+        //seperates length of Ans into the array
+        for (i = 0; i < localStorage.getItem("prev").length; i++) {
+          previous = Array.from(String(localStorage.getItem("prev")), String);
+          equation[length] = previous[i];
+        console.log('equation is: ' + equation);
+        length++;
+        }
+      }
+      else {
+        equation[length] = value;
+        length++;
+      }
+      // displays all characters of array and converts operators to common symbols
+      for (i = 0; i < length; i++) {
+        if (equation[i] == '*') {
+          display = display + 'x';
+        }
+        else if (equation[i] == '/' ) {
+          display = display + '÷';
+        }
+        else {
+          display = display + equation[i];
+        }
+      }  
+    document.getElementById("array").innerHTML = display; 
     }
-    else {
-      equation[length] = value;
-    }
-    length++;
-    // displays all characters of array
-    for (i = 0; i < length; i++) {
-      display = display + equation[i];  
-    }  
-  document.getElementById("array").innerHTML = display; 
 }
 
 // clears each character of the array when screen is cleared
 function reset() {
+  let sound = new Audio('Assets/ClickSFX.wav');
+  sound.play();  
   for (i = 0; i < length; i++) {
     equation.pop()
   }
   length = 0;
-  display = "‎";
-  document.getElementById("array").innerHTML = display;
+  display = "";
+  document.getElementById("array").innerHTML = "";
+  document.getElementById("answer").innerHTML = "";
 }
 
 // removes last character from array
 function remove() {
+    let sound = new Audio('Assets/ClickSFX.wav');
+    sound.play();  
     display = "";  
     equation.pop()
     length = length - 1;
     for (i = 0; i < length; i++) {
-      display = display + equation[i];  
+      if (equation[i] == '*') {
+        display = display + 'x';
+      }
+      else if (equation[i] == '/' ) {
+        display = display + '÷';
+      }
+      else {
+        display = display + equation[i];
+      }
     }  
     document.getElementById("array").innerHTML = display; 
 }
 
 //returns final answer
 function equals() {
-  let error = false;
+  let sound = new Audio('Assets/ClickSFX.wav');
+  sound.play();  
+  
   let string = "";
   let newEquation = [];
   let part = 0;
@@ -52,11 +88,22 @@ function equals() {
    // checks to see if the decimal place is used correctly
   for (i = 0; i < equation.length; i++) {
     if (equation[i] == '.') {
-      if (equation[i + 1] == '.' || equation[i + 1] == '/' || equation[i + 1] == '*' || equation[i + 1] == '-' || equation[i + 1] == '+') {
+      if (equation[i + 1] == '/' || equation[i + 1] == '*' || equation[i + 1] == '-' || equation[i + 1] == '+') {
         error = true;
       }
-   }
+      for(j = i; j < equation.length - i; j++) {
+        if (equation[j] == '*' || equation[j] == '/' || equation[j] == '+' || equation[j] == '-' || j == equation.length) {
+          break;
+        }
+        else {
+          if (equation[j + 1] == '.') {
+            error = true;
+            break;
+          }
+        }
+      }
   }
+}
   
   // joins all integers together into one string
   for (i = 0; i < length; i++) {
@@ -83,31 +130,45 @@ function equals() {
     error = true;
   } 
 
-  // equation error free and contains elements:
-  if (error == false && equation != "") {
+  
+  console.log("error: " + error);
+  
+  // Do heavy calculations
+  if (equation != []) {
     let equation = clean(newEquation);
     result = calculate(equation);
   }
-  //equation clear, return clear
-  else if (equation == "") {
-  result = "‎";
-  }
-
-  if (error == true) {
+  
+  
+  // if equation is not valid:
+  if (error == true && equation != []) {
     result = "error";
   }
+  //equation clear, return clear
+  else if (equation == []) {
+    result = "";
+  }
+
+  if ((result === "NaN" || result === "Infinity") && error == false) {
+    result = "Naughty Naughty";
+    document.getElementById("answer").style.color = "#FF0000";
+  }
+  console.log("error? " + error);
+  console.log("answer?" + result);
   
   //set local item to be accessed by Ans later
-  if (error == false) {
+  if (error == false && equation != []) {
     localStorage.setItem("prev", result);
   }
 
   document.getElementById("answer").innerHTML = result; 
+  error = false;
 }
 
 //simplifies operators
 function clean(equation) {
   for (i = 0; i < equation.length; i++) {
+    console.log("equation length is:" + equation.length);
     // turns '++' to '+' and '+-' to '-'
     if (equation[i] == '+') {
       while (equation[i + 1] == '+' && equation[i] == '+') {
@@ -133,22 +194,19 @@ function clean(equation) {
         i = i - 1;
       }
     }
-
-    // checks that multiply and divide are not together
-    if (equation[i] == '*') {
-      if (equation[i + 1] == '*' || equation[i + 1] == '/') {
-        return "error";
-      }
+    //////////////////////////////////////////// here
+    if (equation[i] == '*' && (equation[i + 1] == '*' || equation[i + 1] == '/')) {
+      error = true;
+      console.log("please work");
     }
-    if (equation[i] == '/') {
-      if (equation[i + 1] == '*' || equation[i + 1] == '/') {
-        return "error";
-      }
+    if (equation[i] == '/' && (equation[i + 1] == '*' || equation[i + 1] == '/')) {
+      error = true;
     }
   }
   return equation;
 }
 
+//Function that actually does the maths
 function calculate(equation) {
   let calculation = []
   let value = 0;
@@ -232,4 +290,3 @@ function compress(cleaned) {
 }
   return cleaned;
 }
-

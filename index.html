@@ -10,11 +10,11 @@
 <body>
   <div class = explanation>
     <h1>Simple Calculator</h1>
-    <p>This is a simple calculator for a SDD assignment. It does BODMAS and it will hopefully not break. The back arrow deletes the last value and 'C' clears the whole array. It's fun doing math with values such as 'Infinity' and 'NaN' so play around with it. <br><br><br><br><br><br> <br> DON'T DIVIDE BY 0!</p>
+    <p>This is a simple calculator for a SDD assignment. It does BODMAS and it will *hopefully* not break. The back arrow deletes the last value, 'C' clears the whole array and 'Ans' inserts the previous stored answer into the equation. <br><br><br><br><br><br> <br> DON'T DIVIDE BY 0!</p>
   </div>
   <div class = core>
     <div class="calculator">
-      <div class="screen"><p class="array" id="array">‎</p><p class="answer" id="answer"></p></div>
+      <div class="screen"><p class="array" id="array"></p><p class="answer" id="answer"></p></div>
       <div onclick="character('+')" class="operator">+</div>
       <div onclick="character(7)" class="integer">7</div>
       <div onclick="character(8)" class="integer">8</div>
@@ -24,13 +24,13 @@
       <div onclick="character(4)" class="integer">4</div>
       <div onclick="character(5)" class="integer">5</div>
       <div onclick="character(6)" class="integer">6</div>
-      <div onclick="remove()" class="operator">↵</div>
-      <div onclick="character('*')" class="operator">*</div>
+      <div onclick="remove()" class="operator">←</div>
+      <div onclick="character('*')" class="operator">×</div>
       <div onclick="character(1)" class="integer">1</div>
       <div onclick="character(2)" class="integer">2</div>
       <div onclick="character(3)" class="integer">3</div>
       <div onclick="character('Ans')" class="operator">Ans</div>
-      <div onclick="character('/')" class="operator">/</div>
+      <div onclick="character('/')" class="operator">÷</div>
       <div onclick="character(0)" class="integer">0</div>
       <div onclick="character('.')" class="integer">.</div>
       <div onclick="equals()" class="equals">=</div>
@@ -40,7 +40,7 @@
 
   <footer>
     <p class="footer-text">
-      Basic Calculator
+      Simple Calculator
     </p>
   </footer>
 </body>
